@@ -1,0 +1,31 @@
+#!/bin/bash
+#snmp-deploy.sh
+#auth bob in bj 20180626
+
+#1.yum install snmpd
+rpm -qa|grep net-snmp
+if [ $? == 0 ];then
+   service snmpd stop
+else
+   yum -y install net-snmp
+fi
+#2.gain/obtain the profile
+wget http://172.16.10.121/profile/snmpd.conf -P /var/lib/net-snmp/
+chmod 600 /var/lib/net-snmp/snmpd.conf
+wget -O snmpd.conf http://172.16.10.121/profile/snmpd.conf-v2-v3.bk
+mv -f snmpd.conf /etc/snmp/
+chmod 600 /etc/snmp/snmpd.conf
+
+cat /etc/snmp/snmpd.conf |grep -v "^#"|grep -v "^$"
+
+#3.start snmpd service
+service snmpd start
+#4.
+#snmpwalk -v 3 -u inlinero -a SHA -A "userpaw" -x DES -X "conpwd" -l authPriv 172.16.10.73 sysDescr
+#5.auto start 
+osversion=`awk '{print $4}' /etc/redhat-release|cut -c 1`
+if [ $osversion -gt 6 ];then
+    systemctl enable snmpd
+else
+    chkconfig --level 345 snmpd on
+fi
