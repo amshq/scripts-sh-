@@ -2,6 +2,7 @@
 #snmp-deploy.sh
 #auth bob in bj 20180626
 #sssssssssssssssddddd
+#dd
 #1.yum install snmpd
 rpm -qa|grep net-snmp
 if [ $? == 0 ];then
